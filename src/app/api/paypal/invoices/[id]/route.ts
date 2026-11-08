@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { pool } from "@/lib/db";
 
 type RouteContext = {
   params: Promise<{
@@ -41,6 +42,7 @@ export async function GET(
       `${clientId}:${clientSecret}`
     ).toString("base64");
 
+    // Obtener token de acceso.
     const tokenResponse = await fetch(
       `${baseUrl}/v1/oauth2/token`,
       {
@@ -66,6 +68,7 @@ export async function GET(
       );
     }
 
+    // Consultar factura en PayPal.
     const invoiceResponse = await fetch(
       `${baseUrl}/v2/invoicing/invoices/${encodeURIComponent(id)}`,
       {
@@ -90,9 +93,66 @@ export async function GET(
       );
     }
 
+    // Obtener los enlaces proporcionados por PayPal.
+    const paypalLinks = Array.isArray(invoiceData.links)
+      ? invoiceData.links.map(
+          (link: {
+            rel: string;
+            href: string;
+            method?: string;
+          }) => ({
+            rel: link.rel,
+            href: link.href,
+            method: link.method,
+          })
+        )
+      : [];
+
+    // Buscar el enlace de visualización del comprador.
+    const payerViewLink =
+      invoiceData.detail?.metadata?.recipient_view_url ??
+      invoiceData.detail?.metadata?.payer_view_url ??
+      invoiceData.metadata?.payer_view_url ??
+      paypalLinks.find(
+        (link: { rel: string; href: string }) =>
+          link.rel === "payer-view"
+      )?.href ??
+      null;
+
+    // Sincronizar el estado de pago y el enlace en PostgreSQL.
+    const paymentStatus =
+      invoiceData.status === "PAID" ? "PAID" : null;
+
+    const syncResult = await pool.query(
+      `
+      UPDATE milestones
+      SET
+        paypal_invoice_url = COALESCE($1, paypal_invoice_url),
+        payment_status = CASE
+          WHEN $2 = 'PAID' THEN 'PAID'
+          ELSE payment_status
+        END,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE paypal_invoice_id = $3
+      RETURNING
+        id,
+        name,
+        status,
+        payment_status
+      `,
+      [payerViewLink, paymentStatus, id]
+    );
+
+    const milestone = syncResult.rows[0] ?? null;
+
     return NextResponse.json({
       success: true,
-      message: "Factura consultada correctamente.",
+      message: "Factura consultada y sincronizada correctamente.",
+      synchronization: {
+        found: Boolean(milestone),
+        updated: Boolean(milestone && paymentStatus === "PAID"),
+        milestone,
+      },
       invoice: {
         id: invoiceData.id,
         status: invoiceData.status,
@@ -101,15 +161,21 @@ export async function GET(
         recipientEmail:
           invoiceData.primary_recipients?.[0]?.billing_info?.email_address,
         amount: invoiceData.amount?.value,
+        paymentUrl: payerViewLink,
+        paypalLinks,
+        metadata:
+          invoiceData.detail?.metadata ??
+          invoiceData.metadata ??
+          null,
       },
     });
   } catch (error) {
-    console.error("Error al consultar factura:", error);
+    console.error("Error al consultar o sincronizar factura:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Error interno al consultar la factura.",
+        message: "Error interno al consultar o sincronizar la factura.",
       },
       { status: 500 }
     );

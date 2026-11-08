@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f8ff;
+  --foreground: #001b52;
 }
 
 @theme inline {
@@ -10,13 +10,21 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-paypal-border: #d9e3f4;
+  --color-paypal-surface: #ffffff;
+  --color-paypal-blue: #0878f9;
+  --color-paypal-ink: #001b52;
+  --color-paypal-muted: #526482;
+  --color-paypal-focus: #0786ef;
+  --color-paypal-navy: #002e80;
+  --color-hito-ink: #001b52;
+  --color-hito-navy: #002e80;
+  --color-hito-blue: #0878f9;
+  --color-hito-violet: #6f39ed;
+  --color-hito-cyan: #12bacb;
+  --color-hito-muted: #526482;
+  --color-hito-border: #d9e3f4;
+  --color-hito-tint: #edf4ff;
 }
 
 body {

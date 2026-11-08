@@ -1,10 +1,15 @@
-
+import { saveProject } from "@/lib/projects";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 // Validación de los datos que recibirá nuestro endpoint.
 const projectInputSchema = z.object({
+  projectName: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === "" ? undefined : value,
+    z.string().trim().min(3).max(150).optional()
+  ),
   projectDescription: z.string().trim().min(20).max(3000),
   totalAmount: z.number().positive().max(100000),
   durationDays: z.number().int().min(1).max(365),
@@ -149,6 +154,7 @@ export async function POST(request: Request) {
     }
 
     const {
+      projectName,
       projectDescription,
       totalAmount,
       durationDays,
@@ -329,18 +335,50 @@ de planificación que deberá ser revisada y aprobada por una persona.
       previousStartDate = milestone.startDate;
     }
 
-    // Devolver la propuesta para revisión humana.
+    // Guardar el proyecto y sus hitos en PostgreSQL.
+    let saved;
+
+    try {
+      saved = await saveProject({
+        projectName,
+        projectDescription,
+        totalAmount,
+        durationDays,
+        startDate,
+        endDate: endDateLimit,
+        summary: plan.summary,
+        milestones: plan.milestones,
+      });
+    } catch (error) {
+      console.error("Error al guardar el plan en PostgreSQL:", error);
+
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "El plan se generó correctamente, pero no se pudo guardar en la base de datos.",
+          errorCode: "DATABASE_SAVE_ERROR",
+        },
+        { status: 500 }
+      );
+    }
+
+    // Devolver el proyecto guardado, pendiente de aprobación humana.
     return NextResponse.json({
       success: true,
-      message: "Plan de trabajo generado correctamente.",
+      message: "Plan generado y guardado correctamente.",
       approved: false,
       project: {
+        id: saved.project.id,
+        name: saved.project.name,
+        status: saved.project.status,
         totalAmount,
         durationDays,
         startDate,
         endDate: endDateLimit,
       },
       plan,
+      milestonesSaved: saved.milestonesSaved,
     });
   } catch (error) {
     console.error("Error al generar el plan con Gemini:", error);

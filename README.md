@@ -1,124 +1,90 @@
-﻿# HitoFlow AI
+# HitoFlow AI
 
-**Gestión inteligente de proyectos y pagos por hitos con PayPal.**
+HitoFlow AI helps freelancers turn a client brief into a reviewable project plan with payment milestones. After the freelancer approves the plan, the app can create and send a PayPal Sandbox invoice for one of its milestones.
 
-HitoFlow AI es un asistente diseñado para freelancers y pequeñas agencias que transforma una descripción informal de un trabajo en un plan organizado de hitos, fechas e importes. Cada hito se relaciona con una factura de PayPal, permitiendo que el cronograma del proyecto responda al estado real de los pagos.
+## Current prototype
 
-## Objetivo del proyecto
+- Generate one to three milestones with Gemini using structured JSON.
+- Validate the milestone amounts, percentages, and dates on the server.
+- Save projects and milestones in PostgreSQL as pending approval.
+- Approve or reject a generated plan before billing.
+- Review accepted, pending, and cancelled projects in the project history.
+- Create and send a PayPal Sandbox invoice from an approved milestone.
+- Review sent invoices and synchronize each invoice status with PayPal.
+- Look up an invoice and receive PayPal webhooks; webhook signatures are verified and duplicate event IDs are ignored.
 
-Facilitar la planificación y el seguimiento de proyectos, vinculando el avance de cada etapa con el cumplimiento de sus pagos.
+The Bryntum Gantt view, overdue rescheduling suggestions, hosted deployment, and end-to-end Sandbox payment verification are still pending. The prototype currently uses a project and milestone list instead of a Gantt chart.
 
-## Funcionalidades previstas
+## Stack
 
-- Generación de planes de trabajo mediante inteligencia artificial.
-- Organización de proyectos en un máximo de tres hitos para el MVP.
-- Asignación de fechas e importes a cada hito.
-- Visualización del cronograma mediante Bryntum Gantt.
-- Creación y envío de facturas mediante PayPal Sandbox.
-- Actualización del estado de los hitos según los pagos recibidos.
-- Propuesta de recordatorios y reprogramaciones cuando una factura esté vencida.
-- Revisión y aprobación humana antes de ejecutar acciones importantes.
+- Next.js, React, TypeScript, and Tailwind CSS
+- Gemini API for project planning
+- PostgreSQL for projects, milestones, and webhook events
+- PayPal Invoicing API in Sandbox
+- Zod for request and response validation
 
-## Tecnologías
+## Requirements
 
-- **Frontend y aplicación:** Next.js, React y TypeScript.
-- **Estilos:** Tailwind CSS.
-- **Backend:** rutas API de Next.js y Node.js.
-- **Validación:** Zod.
-- **Pagos:** PayPal Invoicing API (Sandbox).
-- **Cronograma:** Bryntum Gantt.
-- **Base de datos prevista:** PostgreSQL.
-- **Inteligencia artificial prevista:** OpenAI o Gemini.
+- Node.js and npm
+- A PostgreSQL database with the `projects`, `milestones`, and `webhook_events` tables used by the API
+- A Gemini API key
+- A PayPal Developer app with Sandbox credentials
 
-## Estado actual del desarrollo
-
-La primera etapa de desarrollo contempla:
-
-- Proyecto Next.js inicializado.
-- Repositorio Git y ramas de desarrollo configurados.
-- Variables de entorno preparadas para PayPal Sandbox.
-- Endpoint de autenticación OAuth 2.0 implementado y probado.
-- Endpoint para crear facturas implementado; pendiente de validación mediante una factura de prueba en Sandbox.
-
-Las funcionalidades de inteligencia artificial, cronograma, persistencia de datos y sincronización de estados se desarrollarán progresivamente.
-
-## Requisitos previos
-
-- Node.js.
-- npm.
-- Una cuenta de desarrollador de PayPal con credenciales Sandbox.
-
-## Instalación
-
-Clona el repositorio:
-
-```bash
-git clone https://github.com/AngelesJAVAcom/hitoflow-ai.git
-```
-
-Ingresa a la carpeta:
-
-```bash
-cd hitoflow-ai
-```
-
-Instala las dependencias:
+## Setup
 
 ```bash
 npm install
 ```
 
-## Configuración de variables de entorno
+Copy `.env.example` to `.env.local` and enter your local credentials. Keep `.env.local` out of Git. Use Sandbox credentials only during development.
 
-Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
-
-```env
-PAYPAL_CLIENT_ID=TU_CLIENT_ID_SANDBOX
-PAYPAL_CLIENT_SECRET=TU_CLIENT_SECRET_SANDBOX
-PAYPAL_BASE_URL=https://api-m.sandbox.paypal.com
-```
-
-Reemplaza los valores de ejemplo por tus credenciales Sandbox.
-
-**Importante:** No compartas ni publiques el archivo `.env.local`, el Client Secret ni otras credenciales. Las operaciones de PayPal deben ejecutarse desde el backend.
-
-## Ejecución local
-
-Inicia el servidor de desarrollo:
+Start the app:
 
 ```bash
 npm run dev
 ```
 
-Abre en el navegador:
+Open [http://localhost:3000](http://localhost:3000). The home page generates and reviews a project plan. After approval, use **Facturación** to select one of its milestones and send an invoice.
 
-```text
-http://localhost:3000
-```
+## Environment variables
 
-## Endpoints disponibles
+| Variable | Purpose |
+| --- | --- |
+| `GEMINI_API_KEY` | Server-side access to Gemini |
+| `PAYPAL_CLIENT_ID` | PayPal Sandbox application ID |
+| `PAYPAL_CLIENT_SECRET` | PayPal Sandbox server credential |
+| `PAYPAL_BASE_URL` | Sandbox API base URL (`https://api-m.sandbox.paypal.com`) |
+| `PAYPAL_WEBHOOK_ID` | Webhook ID used to verify PayPal signatures |
+| `DB_HOST` | PostgreSQL host |
+| `DB_PORT` | PostgreSQL port; defaults to `5432` |
+| `DB_NAME` | PostgreSQL database name |
+| `DB_USER` | PostgreSQL user |
+| `DB_PASSWORD` | PostgreSQL password |
 
-| Método | Endpoint | Propósito |
-|---|---|---|
-| POST | `/api/paypal/token` | Obtener un token OAuth 2.0 de PayPal |
-| POST | `/api/paypal/invoices` | Solicitar la creación de una factura |
+## API routes
 
-## Seguridad
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/ai/plan` | Generate, validate, and save a plan pending approval |
+| `GET` | `/api/projects` | List projects and milestones |
+| `PATCH` | `/api/projects/:id/approval` | Approve or reject a pending plan |
+| `POST` | `/api/paypal/token` | Request a PayPal access token |
+| `POST` | `/api/paypal/invoices` | Create and send an invoice for an approved milestone |
+| `GET` | `/api/paypal/invoices/:id` | Read and synchronize invoice status |
+| `POST` | `/api/paypal/webhooks` | Verify and process PayPal webhook events |
 
-- Utilizar exclusivamente PayPal Sandbox durante el desarrollo.
-- Mantener las credenciales en variables de entorno.
-- No exponer tokens ni secretos en el frontend.
-- Validar los datos recibidos desde el cliente en el servidor.
-- Requerir aprobación humana para acciones relevantes del proyecto.
+## Security notes
 
-## Equipo de desarrollo
+- Keep API keys and database credentials on the server in environment variables.
+- Do not commit `.env.local`, credentials, or access tokens.
+- Use PayPal Sandbox while building and demonstrating the prototype.
+- Treat AI output as a proposal and require a human to review project plans before approval.
+- Invoice amount and description are loaded from the approved database milestone, not trusted from browser input.
 
-Proyecto desarrollado por Ángeles y Makk para la PayPal AI Hackathon 2026.
+## Team
 
-## Licencia
+Built by Ángeles and Makk for the PayPal AI Hackathon 2026.
 
-Pendiente de definir y agregar antes de la entrega pública del repositorio.
+## License
 
-
-
-
+No open-source license has been added yet. Add and verify the license before publishing the final submission.

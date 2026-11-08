@@ -6,8 +6,11 @@ import type {
 type CreateInvoiceResponse = {
   success: boolean;
   message?: string;
-  invoiceId?: string;
-  status?: string;
+  invoice?: {
+    id: string;
+    status: string;
+    paymentUrl: string | null;
+  };
 };
 
 export async function createInvoice(
@@ -32,8 +35,8 @@ export async function createInvoice(
   if (
     !response.ok ||
     !data.success ||
-    !data.invoiceId ||
-    !data.status
+    !data.invoice?.id ||
+    !data.invoice.status
   ) {
     throw new Error(
       data.message ?? "No se pudo crear el borrador de factura.",
@@ -41,8 +44,9 @@ export async function createInvoice(
   }
 
   return {
-    invoiceId: data.invoiceId,
-    status: data.status,
-    message: data.message ?? "Borrador de factura creado correctamente.",
+    invoiceId: data.invoice.id,
+    status: data.invoice.status,
+    message: data.message ?? "Factura creada y enviada correctamente.",
+    paymentUrl: data.invoice.paymentUrl,
   };
 }
