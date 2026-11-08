@@ -7,6 +7,10 @@ type PayPalWebhookEvent = {
   resource?: {
     id?: string;
     status?: string;
+    invoice?: {
+      id?: string;
+      status?: string;
+    };
   };
 };
 
@@ -53,6 +57,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // PayPal's INVOICING.INVOICE.PAID payload nests the invoice object
+    // under resource.invoice; accept resource.id as well for older payloads.
+    const invoiceId = event.resource?.id ?? event.resource?.invoice?.id;
 
     // Obtener encabezados originales enviados por PayPal.
     const transmissionId = request.headers.get(
@@ -171,13 +179,22 @@ export async function POST(request: Request) {
           processing_status
         )
         VALUES ($1, $2, $3, 'RECEIVED')
-        ON CONFLICT (event_id) DO NOTHING
+        ON CONFLICT (event_id) DO UPDATE
+        SET
+          paypal_resource_id = COALESCE(
+            EXCLUDED.paypal_resource_id,
+            webhook_events.paypal_resource_id
+          ),
+          processing_status = 'RECEIVED',
+          error_message = NULL,
+          processed_at = NULL
+        WHERE webhook_events.processing_status = 'FAILED'
         RETURNING id
         `,
         [
           event.id,
           event.event_type,
-          event.resource?.id ?? null,
+          invoiceId ?? null,
         ]
       );
 
@@ -194,8 +211,6 @@ export async function POST(request: Request) {
 
       // Procesar únicamente los pagos confirmados de facturas.
       if (event.event_type === "INVOICING.INVOICE.PAID") {
-        const invoiceId = event.resource?.id;
-
         if (!invoiceId) {
           await client.query(
             `
