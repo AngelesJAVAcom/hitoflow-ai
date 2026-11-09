@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/lib/language";
 
 type WorkspaceHeroProps = {
   eyebrow: string;
@@ -15,6 +18,7 @@ type WorkspaceHeroProps = {
   visualTitle?: string;
   visualBadge?: string;
   visualFooter?: "logo" | "project-lifecycle";
+  variant?: "projects" | "timeline" | "invoices" | "newInvoice";
 };
 
 const stepAccent = {
@@ -37,7 +41,15 @@ export function WorkspaceHero({
   visualTitle = "Un flujo claro de principio a fin",
   visualBadge = "TU ESPACIO",
   visualFooter = "logo",
+  variant,
 }: WorkspaceHeroProps) {
+  const { t } = useLanguage();
+  const prefix = variant ? `hero.${variant}.` : null;
+  const translatedSteps = variant ? [1, 2, 3].map((number, index) => ({
+    title: t(`${prefix}step${number}` as import("@/lib/translations").TranslationKey),
+    description: t(`${prefix}step${number}Description` as import("@/lib/translations").TranslationKey),
+    accent: steps[index]?.accent ?? "blue",
+  })) : steps;
   return (
     <section className="hero-panel relative isolate mb-7 overflow-hidden rounded-[2rem] border border-white/80 bg-[linear-gradient(115deg,rgba(255,255,255,0.97)_0%,rgba(246,250,255,0.95)_48%,rgba(245,241,255,0.92)_100%)] p-6 shadow-[0_24px_70px_rgba(37,73,143,0.09)] ring-1 ring-[#dce7fa] sm:p-9 lg:p-10">
       <div aria-hidden="true" className="hero-grid pointer-events-none absolute inset-0 z-0 opacity-50" />
@@ -46,24 +58,24 @@ export function WorkspaceHero({
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#d7e5ff] bg-white/85 px-3.5 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-hito-violet shadow-sm sm:text-xs">
             <span className="size-2 rounded-full bg-gradient-to-r from-hito-blue to-hito-violet" />
-            {eyebrow}
+            {variant ? t(`hero.${variant}.eyebrow` as import("@/lib/translations").TranslationKey) : eyebrow}
           </div>
           <h1 className="mt-4 text-[2.35rem] font-black leading-[1.08] tracking-[-0.04em] text-hito-navy sm:text-4xl lg:text-[3.15rem]">
-            {title}{" "}
+            {variant ? t(`hero.${variant}.title` as import("@/lib/translations").TranslationKey) : title}{" "}
             <span className="bg-gradient-to-r from-[#0878f9] via-[#425cf4] to-[#7138ed] bg-clip-text text-transparent">
-              {highlight}
+              {variant ? t(`hero.${variant}.highlight` as import("@/lib/translations").TranslationKey) : highlight}
             </span>
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-8">
-            {description}
+            {variant ? t(`hero.${variant}.description` as import("@/lib/translations").TranslationKey) : description}
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link href={primaryHref} className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0878f9] via-[#345ff4] to-[#7038ed] px-5 py-3.5 text-sm font-extrabold text-white shadow-[0_12px_26px_rgba(60,91,226,0.22)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(60,91,226,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/50">
-              {primaryLabel}
+              {variant ? t(`hero.${variant}.primary` as import("@/lib/translations").TranslationKey) : primaryLabel}
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 transition-transform group-hover:translate-x-1"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
             </Link>
             <Link href={secondaryHref} className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d5e1f6] bg-white/80 px-5 py-3.5 text-sm font-bold text-hito-navy shadow-sm transition hover:-translate-y-0.5 hover:border-[#a9c6f5] hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/15">
-              {secondaryLabel} <span aria-hidden="true" className="text-hito-violet">↗</span>
+              {variant ? t(`hero.${variant}.secondary` as import("@/lib/translations").TranslationKey) : secondaryLabel} <span aria-hidden="true" className="text-hito-violet">↗</span>
             </Link>
           </div>
         </div>
@@ -73,16 +85,16 @@ export function WorkspaceHero({
           <div className="relative overflow-hidden rounded-[1.7rem] border border-white/90 bg-white/85 p-4 shadow-[0_24px_60px_rgba(28,55,111,0.13)] backdrop-blur-xl sm:p-5">
             <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <div>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-hito-violet">{visualEyebrow}</p>
-                <p className="mt-1 text-sm font-bold text-hito-navy">{visualTitle}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-hito-violet">{variant ? t(`hero.${variant}.visualEyebrow` as import("@/lib/translations").TranslationKey) : visualEyebrow}</p>
+                <p className="mt-1 text-sm font-bold text-hito-navy">{variant ? t(`hero.${variant}.visualTitle` as import("@/lib/translations").TranslationKey) : visualTitle}</p>
               </div>
-              <span className="rounded-full bg-[#e9f7ff] px-2.5 py-1 text-[9px] font-extrabold text-[#0873c8]">{visualBadge}</span>
+              <span className="rounded-full bg-[#e9f7ff] px-2.5 py-1 text-[9px] font-extrabold text-[#0873c8]">{variant ? t(`hero.${variant}.visualBadge` as import("@/lib/translations").TranslationKey) : visualBadge}</span>
             </div>
 
             <div className="relative mt-4">
               <span aria-hidden="true" className="absolute bottom-6 left-[1.1rem] top-6 w-px bg-gradient-to-b from-[#0878f9] via-[#7041ed] to-[#12bacb]" />
               <ol className="grid gap-2.5">
-                {steps.map((step, index) => {
+                {translatedSteps.map((step, index) => {
                   const accent = stepAccent[step.accent];
                   return (
                     <li key={step.title} className={`relative flex items-center gap-3 rounded-2xl border p-3 ${accent.card}`}>
@@ -106,13 +118,13 @@ export function WorkspaceHero({
               </div>
             ) : (
               <div className="mt-3 rounded-2xl bg-[linear-gradient(110deg,#f5f9ff,#fbf9ff,#f2fcfc)] p-3.5 ring-1 ring-[#e4ebf8]">
-                <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">Estados del proyecto</p>
+                <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-slate-500">{t("hero.projects.footer")}</p>
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <span className="rounded-full bg-[#fff5df] px-2.5 py-1 text-[9px] font-extrabold text-amber-800">Pendiente</span>
+                  <span className="rounded-full bg-[#fff5df] px-2.5 py-1 text-[9px] font-extrabold text-amber-800">{t("hero.projects.pending")}</span>
                   <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-amber-300 via-violet-300 to-cyan-300" />
-                  <span className="rounded-full bg-[#f2edff] px-2.5 py-1 text-[9px] font-extrabold text-violet-800">En curso</span>
+                  <span className="rounded-full bg-[#f2edff] px-2.5 py-1 text-[9px] font-extrabold text-violet-800">{t("projects.statusProgress")}</span>
                   <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-violet-300 to-cyan-300" />
-                  <span className="rounded-full bg-[#e9f9f7] px-2.5 py-1 text-[9px] font-extrabold text-teal-800">Completado</span>
+                  <span className="rounded-full bg-[#e9f9f7] px-2.5 py-1 text-[9px] font-extrabold text-teal-800">{t("hero.projects.completed")}</span>
                 </div>
               </div>
             )}

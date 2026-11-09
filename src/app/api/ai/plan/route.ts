@@ -14,6 +14,7 @@ const projectInputSchema = z.object({
   totalAmount: z.number().positive().max(100000),
   durationDays: z.number().int().min(1).max(365),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  language: z.enum(["en", "es"]).default("en"),
 });
 
 // Validación de cada hito generado por Gemini.
@@ -159,6 +160,7 @@ export async function POST(request: Request) {
       totalAmount,
       durationDays,
       startDate,
+      language,
     } = inputResult.data;
 
     // Calcular la fecha límite del proyecto.
@@ -203,6 +205,7 @@ FECHA DE INICIO: ${startDate}
 FECHA LÍMITE: ${endDateLimit}
 
 INSTRUCCIONES:
+0. Escribe el resumen, nombres de hitos y descripciones en ${language === "en" ? "English" : "Spanish"}. Preserve proper nouns as provided.
 1. Divide el trabajo en 1, 2 o 3 hitos.
 2. Elige la cantidad de hitos según el tamaño y complejidad del proyecto.
 3. Para proyectos pequeños y sencillos, prioriza 1 hito cuando sea suficiente.

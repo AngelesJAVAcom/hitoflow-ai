@@ -9,6 +9,7 @@ export default function NewInvoicePage() {
 
       <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-9 lg:px-8 lg:pt-12">
         <WorkspaceHero
+          variant="newInvoice"
           eyebrow="Envío seguro en Sandbox"
           title="Convierte el hito"
           highlight="en una factura."

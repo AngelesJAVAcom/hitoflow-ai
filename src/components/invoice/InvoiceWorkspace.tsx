@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ import type {
 import { InvoiceForm } from "./InvoiceForm";
 import { InvoiceResult } from "./InvoiceResult";
 import { createInvoice } from "./invoiceService";
+import { useLanguage } from "@/lib/language";
 
 type ProjectResponse = {
   success: boolean;
@@ -31,6 +32,7 @@ type ProjectResponse = {
 };
 
 export function InvoiceWorkspace() {
+  const { t } = useLanguage();
   const [milestones, setMilestones] = useState<MilestoneOption[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export function InvoiceWorkspace() {
         if (active) setMilestones(available);
       } catch (cause) {
         if (active) {
-          setLoadError(cause instanceof Error ? cause.message : "No se pudieron cargar los proyectos.");
+          setLoadError(cause instanceof Error ? cause.message : t("api.loadProjectsError"));
         }
       } finally {
         if (active) setIsLoadingProjects(false);
@@ -93,18 +95,18 @@ export function InvoiceWorkspace() {
       setRequestStatus("success");
       setMilestones((current) => current.filter((item) => item.id !== values.milestoneId));
     } catch (cause) {
-      setErrorMessage(cause instanceof Error ? cause.message : "Ocurrió un error inesperado al crear la factura.");
+      setErrorMessage(cause instanceof Error ? cause.message : t("api.unexpectedError"));
       setRequestStatus("error");
     }
   }
 
   return (
     <>
-      {isLoadingProjects && <p className="mb-5 rounded-2xl border border-hito-border bg-white px-4 py-3 text-sm text-hito-muted">Cargando hitos aprobados…</p>}
+      {isLoadingProjects && <p className="mb-5 rounded-2xl border border-hito-border bg-white px-4 py-3 text-sm text-hito-muted">{t("invoiceWorkspace.loading")}</p>}
       {loadError && <p role="alert" className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{loadError}</p>}
       {!isLoadingProjects && !loadError && milestones.length === 0 && (
         <p className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-          Primero genera y aprueba un plan en la página principal. Sus hitos aparecerán aquí para facturarlos.
+          {t("invoiceWorkspace.noMilestones")}
         </p>
       )}
       <div className="grid gap-6 lg:grid-cols-2">

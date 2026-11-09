@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/lib/language";
 import type {
   InvoiceFormValues,
   InvoiceRequestStatus,
@@ -17,12 +20,13 @@ export function InvoiceResult({
   result,
   errorMessage,
 }: InvoiceResultProps) {
+  const { t } = useLanguage();
   return (
     <aside className="relative overflow-hidden rounded-[1.75rem] border border-white bg-white/90 p-5 shadow-[0_20px_55px_rgba(20,54,117,0.07)] ring-1 ring-[#dce7fa] sm:p-7">
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12bacb] via-[#0878f9] to-[#7041ed]" />
       <p className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-hito-violet">
         <span className="grid size-6 place-items-center rounded-lg bg-[#eaf8fa] text-[10px] text-cyan-700">02</span>
-        Resultado
+        {t("invoiceResult.title")}
       </p>
 
       {requestStatus === "idle" && (
@@ -35,11 +39,11 @@ export function InvoiceResult({
           </div>
 
           <h2 className="text-lg font-black text-hito-navy">
-            Todavía no hay una factura
+            {t("invoiceResult.emptyTitle")}
           </h2>
 
           <p className="mt-2 max-w-sm text-sm leading-6 text-hito-muted">
-            Completa el formulario para crear y enviar una factura en PayPal Sandbox.
+            {t("invoiceResult.emptyDescription")}
           </p>
         </div>
       )}
@@ -51,10 +55,10 @@ export function InvoiceResult({
             className="mb-4 size-12 animate-pulse rounded-2xl bg-gradient-to-br from-[#0878f9]/20 via-[#7041ed]/20 to-[#12bacb]/20"
           />
           <h2 className="text-lg font-black text-hito-navy">
-            Creando y enviando la factura
+            {t("invoiceResult.loadingTitle")}
           </h2>
           <p className="mt-2 text-sm text-hito-muted">
-            Estamos conectando con PayPal Sandbox.
+            {t("invoiceResult.loadingDescription")}
           </p>
         </div>
       )}
@@ -62,7 +66,7 @@ export function InvoiceResult({
       {requestStatus === "error" && (
         <div className="mt-6 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 to-white p-5">
           <p className="text-sm font-bold text-rose-700">
-            No se pudo crear el borrador
+            {t("invoiceResult.errorTitle")}
           </p>
           <p className="mt-2 text-sm leading-6 text-rose-700/80">
             {errorMessage}
@@ -73,13 +77,13 @@ export function InvoiceResult({
       {requestStatus === "success" && result && (
         <div className="mt-6 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5">
           <p className="text-sm font-bold text-emerald-800">
-            {result.message}
+            {t("invoiceResult.sent")}
           </p>
 
           <dl className="mt-4 space-y-3">
             <div>
               <dt className="text-xs uppercase tracking-wider text-emerald-800/70">
-                Identificador
+                {t("invoiceResult.identifier")}
               </dt>
               <dd className="mt-1 break-all text-sm text-hito-ink">
                 {result.invoiceId}
@@ -87,7 +91,7 @@ export function InvoiceResult({
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wider text-emerald-800/70">
-                Estado
+                {t("invoiceResult.status")}
               </dt>
               <dd className="mt-1 text-sm font-semibold text-hito-ink">
                 {result.status}
@@ -101,7 +105,7 @@ export function InvoiceResult({
                   rel="noreferrer"
                   className="inline-flex rounded-full bg-gradient-to-r from-[#0878f9] to-[#7038ed] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:-translate-y-0.5"
                 >
-                  Abrir enlace de PayPal
+                  {t("invoiceResult.openPaypal")}
                 </a>
               </div>
             )}
@@ -113,7 +117,7 @@ export function InvoiceResult({
         <dl className="mt-6 grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl bg-[#f5f8ff] p-4 ring-1 ring-[#e8eef8] sm:col-span-2">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
-              Cliente
+              {t("invoiceResult.client")}
             </dt>
             <dd className="mt-1 break-all text-sm text-hito-ink">
               {draft.customerEmail}
@@ -121,7 +125,7 @@ export function InvoiceResult({
           </div>
           <div className="rounded-xl bg-[#f8f5ff] p-4 ring-1 ring-[#eee8fb]">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
-              Hito
+              {t("invoiceResult.milestone")}
             </dt>
             <dd className="mt-1 text-sm text-hito-ink">
               {draft.milestoneName}
@@ -129,7 +133,7 @@ export function InvoiceResult({
           </div>
           <div className="rounded-xl bg-[#f1fbfb] p-4 ring-1 ring-[#def3f4]">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
-              Importe
+              {t("invoiceResult.amount")}
             </dt>
             <dd className="mt-1 text-sm font-semibold text-hito-navy">
               USD {draft.amount}

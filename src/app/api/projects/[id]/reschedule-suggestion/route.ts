@@ -60,6 +60,7 @@ interface RouteContext {
 
 export async function POST(_request: Request, context: RouteContext) {
   try {
+    const language = new URL(_request.url).searchParams.get("language") === "es" ? "Spanish" : "English";
     const { id } = await context.params;
     if (!z.string().uuid().safeParse(id).success) {
       return NextResponse.json({ success: false, message: "Identificador de proyecto inválido." }, { status: 400 });
@@ -122,22 +123,22 @@ export async function POST(_request: Request, context: RouteContext) {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-3.8-flash",
-      contents: `Propón una reprogramación para este proyecto sin cambiar el orden de los hitos ni modificar hitos ya pagados.
+      contents: `Propose a reschedule for this project without changing milestone order or modifying milestones that have already been paid. Write the summary and reasons in ${language}.
 
-Proyecto: ${project.name}
-Descripción: ${project.description}
-Resumen original: ${project.ai_summary}
-Fecha actual en Ecuador: ${today}
-Los hitos pagados son fechas fijas: ${JSON.stringify(fixedPaidMilestones)}
-Hitos pendientes desde el primer vencido: ${JSON.stringify(targetContext)}
+Project: ${project.name}
+Description: ${project.description}
+Original summary: ${project.ai_summary}
+Current date in Ecuador: ${today}
+Paid milestones are fixed dates: ${JSON.stringify(fixedPaidMilestones)}
+Pending milestones starting with the first overdue one: ${JSON.stringify(targetContext)}
 
-Reglas:
-- Devuelve exactamente un elemento por cada hito pendiente indicado y conserva cada id.
-- El nuevo inicio debe ser mañana o después; conserva la duración inclusiva exacta indicada.
-- Mantén el orden cronológico original, evita solapamientos y no cruces las fechas de hitos pagados.
-- Puedes extender la fecha final del proyecto si hace falta.
-- No cambies nombres, importes ni estados. Explica brevemente el criterio de cada fecha.
-- Usa fechas YYYY-MM-DD y responde solo con el JSON del esquema.`,
+Rules:
+- Return exactly one item for each indicated pending milestone and preserve each id.
+- The new start must be tomorrow or later; preserve the exact inclusive duration provided.
+- Keep the original chronological order, avoid overlaps, and do not cross paid milestone dates.
+- You may extend the project end date if needed.
+- Do not change names, amounts, or statuses. Briefly explain the reasoning for each date.
+- Use YYYY-MM-DD dates and respond only with JSON matching the schema.`,
       config: {
         responseMimeType: "application/json",
         responseJsonSchema,

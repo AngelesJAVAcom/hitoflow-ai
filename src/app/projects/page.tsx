@@ -8,6 +8,7 @@ export default function ProjectsPage() {
       <AppHeader />
       <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-9 lg:px-8 lg:pt-12">
         <WorkspaceHero
+          variant="projects"
           eyebrow="Seguimiento de tu trabajo"
           title="Cada proyecto,"
           highlight="bajo control."
