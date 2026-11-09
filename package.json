@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed-demo.mjs",
     "lint": "eslint"
   },
   "dependencies": {
