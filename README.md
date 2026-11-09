@@ -99,4 +99,4 @@ Built by Ángeles and Makk for the PayPal AI Hackathon 2026.
 
 ## License
 
-No open-source license has been added yet. Add and verify the license before publishing the final submission.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
