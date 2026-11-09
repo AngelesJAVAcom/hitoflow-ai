@@ -107,8 +107,8 @@ async function seed() {
         payment_status,
         paypal_invoice_id
       ) VALUES
-        ($1, 'Investigación y concepto de marca', 'Benchmark, arquetipo de marca y moodboard conceptual.', 30.00, 240.00, '2026-10-18', '2026-10-26', 'COMPLETED', 'PAID', 'INV2-DEMO-CAFE-PAID-01'),
-        ($1, 'Diseño de identidad visual y empaques', 'Logotipo, paleta cromática, tipografías y diseño de empaques para café en grano.', 40.00, 320.00, '2026-10-27', '2026-11-04', 'IN_PROGRESS', 'UNPAID', 'INV2-DEMO-CAFE-OVERDUE'),
+        ($1, 'Investigación y concepto de marca', 'Benchmark, arquetipo de marca y moodboard conceptual.', 30.00, 240.00, '2026-10-18', '2026-10-26', 'COMPLETED', 'PAID', NULL),
+        ($1, 'Diseño de identidad visual y empaques', 'Logotipo, paleta cromática, tipografías y diseño de empaques para café en grano.', 40.00, 320.00, '2026-10-27', '2026-11-04', 'IN_PROGRESS', 'UNPAID', NULL),
         ($1, 'Manual de marca y entrega de recursos', 'Guía de uso normativo y exportación de piezas finales en alta resolución.', 30.00, 240.00, '2026-11-05', '2026-11-11', 'PENDING', 'NOT_INVOICED', NULL)
     `, [cafeId]);
 
