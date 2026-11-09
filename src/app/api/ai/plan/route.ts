@@ -1,5 +1,5 @@
 import { saveProject } from "@/lib/projects";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -229,6 +229,7 @@ de planificación que deberá ser revisada y aprobada por una persona.
         config: {
           responseMimeType: "application/json",
           responseJsonSchema: responseSchema,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
         },
       })
     );

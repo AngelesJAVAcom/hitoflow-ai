@@ -12,8 +12,10 @@ HitoFlow AI helps freelancers turn a client brief into a reviewable project plan
 - Create and send a PayPal Sandbox invoice from an approved milestone.
 - Review sent invoices and synchronize each invoice status with PayPal.
 - Look up an invoice and receive PayPal webhooks; webhook signatures are verified and duplicate event IDs are ignored.
+- Review project milestones in a read-only Bryntum Gantt timeline, including planned dates and payment status.
+- Generate Gemini rescheduling proposals for overdue unpaid milestones; the user reviews and accepts before dates are saved.
 
-The Bryntum Gantt view, overdue rescheduling suggestions, hosted deployment, and end-to-end Sandbox payment verification are still pending. The prototype currently uses a project and milestone list instead of a Gantt chart.
+The core Sandbox invoice and payment-status flow has been verified. Hosted deployment, final quality review, demo recording, and Devpost submission are still pending.
 
 ## Stack
 
@@ -45,6 +47,13 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The home page generates and reviews a project plan. After approval, use **Facturación** to select one of its milestones and send an invoice.
+Use **Cronograma** to select a project and review its milestone dates and payment status in the Gantt view.
+
+## Render deployment
+
+The repository includes a Render Blueprint in `render.yaml`. It provisions a Node web service and a PostgreSQL database, runs the idempotent schema setup on service start, and keeps credentials out of Git. In Render, create a Blueprint from this repository and enter the requested Gemini and PayPal Sandbox secrets in the Dashboard.
+
+The Blueprint currently uses Render's free plans for a hackathon demo. Free web services spin down when idle, and free PostgreSQL databases expire 30 days after creation. Upgrade PostgreSQL before relying on the hosted database for long-term storage. The database starts empty; it does not copy the local development records.
 
 ## Environment variables
 
@@ -68,6 +77,8 @@ Open [http://localhost:3000](http://localhost:3000). The home page generates and
 | `POST` | `/api/ai/plan` | Generate, validate, and save a plan pending approval |
 | `GET` | `/api/projects` | List projects and milestones |
 | `PATCH` | `/api/projects/:id/approval` | Approve or reject a pending plan |
+| `POST` | `/api/projects/:id/reschedule-suggestion` | Generate a reviewed proposal for overdue unpaid milestones |
+| `PATCH` | `/api/projects/:id/reschedule` | Apply a confirmed rescheduling proposal |
 | `POST` | `/api/paypal/token` | Request a PayPal access token |
 | `POST` | `/api/paypal/invoices` | Create and send an invoice for an approved milestone |
 | `GET` | `/api/paypal/invoices/:id` | Read and synchronize invoice status |
@@ -79,6 +90,7 @@ Open [http://localhost:3000](http://localhost:3000). The home page generates and
 - Do not commit `.env.local`, credentials, or access tokens.
 - Use PayPal Sandbox while building and demonstrating the prototype.
 - Treat AI output as a proposal and require a human to review project plans before approval.
+- Rescheduling proposals are also reviewed before any dates are changed.
 - Invoice amount and description are loaded from the approved database milestone, not trusted from browser input.
 
 ## Team

@@ -1,27 +1,28 @@
 import { InvoiceWorkspace } from "@/components/invoice/InvoiceWorkspace";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { WorkspaceHero } from "@/components/layout/WorkspaceHero";
 
 export default function NewInvoicePage() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#eaf3ff_0%,_#f6f8ff_45%,_#ffffff_100%)] text-hito-ink">
+    <div className="min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_12%_0%,rgba(8,120,249,0.1),transparent_34%),radial-gradient(ellipse_at_92%_8%,rgba(111,57,237,0.09),transparent_28%),linear-gradient(180deg,#f8faff_0%,#f4f7ff_58%,#f9fbff_100%)] text-hito-ink">
       <AppHeader />
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-        <div className="mb-8">
-          <p className="text-sm font-bold uppercase tracking-widest text-hito-violet">
-            PayPal Sandbox
-          </p>
-
-          <h1 className="mt-2 text-3xl font-bold text-hito-navy sm:text-4xl">
-            Crear factura de un hito
-          </h1>
-
-          <p className="mt-3 max-w-2xl leading-7 text-hito-muted">
-            Selecciona un hito de un proyecto aprobado y envía la factura al
-            cliente. El importe y el concepto salen del plan revisado.
-          </p>
-        </div>
-
+      <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-9 lg:px-8 lg:pt-12">
+        <WorkspaceHero
+          eyebrow="Envío seguro en Sandbox"
+          title="Convierte el hito"
+          highlight="en una factura."
+          description="Elige una entrega aprobada, confirma el correo del cliente y envía la factura de prueba. El importe se toma del plan guardado."
+          primaryHref="#formulario-factura"
+          primaryLabel="Ir al formulario"
+          secondaryHref="/invoices"
+          secondaryLabel="Ver historial"
+          steps={[
+            { title: "Entrega aprobada", description: "Solo aparecen hitos disponibles", accent: "blue" },
+            { title: "Datos del cliente", description: "Confirma el correo de destino", accent: "violet" },
+            { title: "Envío de prueba", description: "PayPal Sandbox, sin cobro real", accent: "cyan" },
+          ]}
+        />
         <InvoiceWorkspace />
       </main>
     </div>

@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: hitoflow-ai
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm run db:migrate && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hitoflow-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_BASE_URL
+        value: https://api-m.sandbox.paypal.com
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+
+databases:
+  - name: hitoflow-db
+    databaseName: hitoflow_ai_db
+    user: hitoflow
+    plan: free
+    region: oregon

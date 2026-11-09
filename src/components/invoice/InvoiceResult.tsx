@@ -18,21 +18,23 @@ export function InvoiceResult({
   errorMessage,
 }: InvoiceResultProps) {
   return (
-    <aside className="rounded-3xl border border-hito-border bg-white p-6 shadow-xl shadow-blue-950/[0.04]">
-      <p className="text-sm font-bold uppercase tracking-wider text-hito-muted">
+    <aside className="relative overflow-hidden rounded-[1.75rem] border border-white bg-white/90 p-5 shadow-[0_20px_55px_rgba(20,54,117,0.07)] ring-1 ring-[#dce7fa] sm:p-7">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#12bacb] via-[#0878f9] to-[#7041ed]" />
+      <p className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-hito-violet">
+        <span className="grid size-6 place-items-center rounded-lg bg-[#eaf8fa] text-[10px] text-cyan-700">02</span>
         Resultado
       </p>
 
       {requestStatus === "idle" && (
-        <div className="flex min-h-72 flex-col items-center justify-center text-center">
+        <div className="flex min-h-[22rem] flex-col items-center justify-center text-center">
           <div
             aria-hidden="true"
-            className="mb-4 flex size-14 items-center justify-center rounded-full bg-violet-100 text-2xl font-semibold text-hito-violet"
+            className="mb-4 flex size-16 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-[#e7f3ff] via-[#f1edff] to-[#e5fbfb] text-2xl font-black text-hito-violet shadow-sm ring-1 ring-[#e3eafa]"
           >
             $
           </div>
 
-          <h2 className="text-lg font-semibold text-hito-navy">
+          <h2 className="text-lg font-black text-hito-navy">
             Todavía no hay una factura
           </h2>
 
@@ -43,12 +45,12 @@ export function InvoiceResult({
       )}
 
       {requestStatus === "loading" && (
-        <div className="flex min-h-72 flex-col items-center justify-center text-center">
+        <div className="flex min-h-[22rem] flex-col items-center justify-center text-center">
           <div
             aria-hidden="true"
-            className="mb-4 size-12 animate-pulse rounded-full bg-hito-blue/25"
+            className="mb-4 size-12 animate-pulse rounded-2xl bg-gradient-to-br from-[#0878f9]/20 via-[#7041ed]/20 to-[#12bacb]/20"
           />
-          <h2 className="text-lg font-semibold text-hito-navy">
+          <h2 className="text-lg font-black text-hito-navy">
             Creando y enviando la factura
           </h2>
           <p className="mt-2 text-sm text-hito-muted">
@@ -58,8 +60,8 @@ export function InvoiceResult({
       )}
 
       {requestStatus === "error" && (
-        <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-5">
-          <p className="text-sm font-semibold text-rose-700">
+        <div className="mt-6 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 to-white p-5">
+          <p className="text-sm font-bold text-rose-700">
             No se pudo crear el borrador
           </p>
           <p className="mt-2 text-sm leading-6 text-rose-700/80">
@@ -69,8 +71,8 @@ export function InvoiceResult({
       )}
 
       {requestStatus === "success" && result && (
-        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-          <p className="text-sm font-semibold text-emerald-800">
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5">
+          <p className="text-sm font-bold text-emerald-800">
             {result.message}
           </p>
 
@@ -97,7 +99,7 @@ export function InvoiceResult({
                   href={result.paymentUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex rounded-full bg-hito-blue px-4 py-2 text-sm font-bold text-white transition hover:bg-hito-navy"
+                  className="inline-flex rounded-full bg-gradient-to-r from-[#0878f9] to-[#7038ed] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:-translate-y-0.5"
                 >
                   Abrir enlace de PayPal
                 </a>
@@ -109,7 +111,7 @@ export function InvoiceResult({
 
       {draft && requestStatus !== "idle" && (
         <dl className="mt-6 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl bg-hito-tint p-4 sm:col-span-2">
+          <div className="rounded-xl bg-[#f5f8ff] p-4 ring-1 ring-[#e8eef8] sm:col-span-2">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
               Cliente
             </dt>
@@ -117,7 +119,7 @@ export function InvoiceResult({
               {draft.customerEmail}
             </dd>
           </div>
-          <div className="rounded-xl bg-hito-tint p-4">
+          <div className="rounded-xl bg-[#f8f5ff] p-4 ring-1 ring-[#eee8fb]">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
               Hito
             </dt>
@@ -125,7 +127,7 @@ export function InvoiceResult({
               {draft.milestoneName}
             </dd>
           </div>
-          <div className="rounded-xl bg-hito-tint p-4">
+          <div className="rounded-xl bg-[#f1fbfb] p-4 ring-1 ring-[#def3f4]">
             <dt className="text-xs uppercase tracking-wider text-hito-muted">
               Importe
             </dt>

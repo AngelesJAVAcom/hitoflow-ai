@@ -1,3 +1,7 @@
+@import "@bryntum/core-community/fontawesome/css/fontawesome.css";
+@import "@bryntum/core-community/fontawesome/css/solid.css";
+@import "@bryntum/gantt-community/gantt.css";
+@import "@bryntum/gantt-community/stockholm-light.css";
 @import "tailwindcss";
 
 :root {
@@ -30,5 +34,79 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(70, 108, 184, 0.075) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(70, 108, 184, 0.075) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(115deg, rgba(0, 0, 0, 0.75), transparent 75%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.hito-gantt-shell {
+  height: 380px;
+  overflow: hidden;
+  border: 1px solid var(--color-hito-border);
+  border-radius: 22px;
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 38%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.hito-gantt-shell .b-gantt {
+  height: 100%;
   font-family: Arial, Helvetica, sans-serif;
+  --grid-header-background: #f2f6ff;
+  --grid-header-color: #002e80;
+  --grid-header-border-color: #dce6f6;
+  --grid-row-border-color: #edf1f8;
+  --grid-cell-color: #23395f;
+}
+
+.hito-gantt-shell .b-grid-header {
+  font-weight: 700;
+}
+
+.hito-gantt-shell .b-grid-header:not(.b-sch-time-axis-column) {
+  background: #f2f6ff;
+}
+
+.hito-gantt-shell .b-grid-cell {
+  font-size: 13px;
+}
+
+.hito-gantt-shell .b-gantt-task-wrap .b-gantt-task {
+  border-radius: 999px;
+  box-shadow: 0 3px 9px rgba(0, 46, 128, 0.18);
+}
+
+.hito-gantt-shell .b-gantt-task-wrap.hito-gantt-parent .b-gantt-task {
+  background: linear-gradient(90deg, #0878f9 0%, #6f39ed 100%);
+}
+
+.hito-gantt-shell .b-gantt-task-wrap.hito-gantt-pending .b-gantt-task {
+  background: linear-gradient(90deg, #0878f9 0%, #6f39ed 100%);
+}
+
+.hito-gantt-shell .b-gantt-task-wrap.hito-gantt-paid .b-gantt-task {
+  background: linear-gradient(90deg, #12bacb 0%, #0878f9 100%);
+}
+
+@media (max-width: 640px) {
+  .hito-gantt-shell {
+    height: 360px;
+    border-radius: 16px;
+  }
 }

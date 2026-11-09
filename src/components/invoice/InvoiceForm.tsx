@@ -27,18 +27,19 @@ export function InvoiceForm({ milestones, onSubmit, isSubmitting }: InvoiceFormP
   }
 
   return (
-    <section className="h-full rounded-[28px] border border-paypal-border bg-paypal-surface p-6 shadow-[0_20px_60px_rgba(0,48,135,0.08)] sm:p-8">
+    <section id="formulario-factura" className="scroll-mt-32 relative h-full overflow-hidden rounded-[1.75rem] border border-white bg-white p-5 shadow-[0_20px_55px_rgba(20,54,117,0.09)] ring-1 ring-[#dce7fa] sm:p-7">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0878f9] via-[#7041ed] to-[#12bacb]" />
       <div>
-        <p className="text-sm font-semibold text-paypal-blue">Facturación del proyecto</p>
-        <h2 className="mt-1 text-2xl font-bold tracking-tight text-paypal-ink">Datos de la factura</h2>
-        <p className="mt-2 text-sm leading-6 text-paypal-muted">Elige un hito aprobado. El importe y el concepto se toman del plan revisado.</p>
+        <p className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-hito-violet"><span className="grid size-6 place-items-center rounded-lg bg-[#f1edff] text-[10px]">01</span>Datos de facturación</p>
+        <h2 className="mt-3 text-2xl font-black tracking-tight text-hito-navy">Prepara el envío</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">Elige un hito aprobado. El importe y el concepto se toman del plan revisado.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-7 space-y-6" aria-busy={isSubmitting}>
         <div>
-          <label htmlFor="milestoneId" className="mb-2 block text-sm font-semibold text-paypal-ink">Hito aprobado</label>
+          <label htmlFor="milestoneId" className="mb-2 block text-[13px] font-bold text-hito-navy">Hito aprobado</label>
           <select id="milestoneId" name="milestoneId" required disabled={isSubmitting || milestones.length === 0}
-            className="w-full rounded-2xl border border-paypal-border bg-white px-4 py-3.5 text-paypal-ink shadow-sm outline-none focus:border-paypal-focus focus:ring-4 focus:ring-[#0057ff]/15 disabled:cursor-not-allowed disabled:bg-slate-100">
+            className="w-full rounded-2xl border border-[#dce5f3] bg-[#f9fbff] px-4 py-3.5 text-sm text-hito-ink shadow-sm outline-none transition focus:border-hito-blue focus:bg-white focus:ring-4 focus:ring-sky-500/10 disabled:cursor-not-allowed disabled:bg-slate-100">
             {milestones.length === 0 ? <option value="">No hay hitos disponibles</option> : <option value="">Selecciona proyecto e hito</option>}
             {milestones.map((milestone) => (
               <option key={milestone.id} value={milestone.id}>
@@ -49,17 +50,17 @@ export function InvoiceForm({ milestones, onSubmit, isSubmitting }: InvoiceFormP
         </div>
 
         <div>
-          <label htmlFor="customerEmail" className="mb-2 block text-sm font-semibold text-paypal-ink">Correo del cliente</label>
+          <label htmlFor="customerEmail" className="mb-2 block text-[13px] font-bold text-hito-navy">Correo del cliente</label>
           <input id="customerEmail" name="customerEmail" type="email" autoComplete="email" required disabled={isSubmitting}
             placeholder="cliente@correo.com"
-            className="w-full rounded-2xl border border-paypal-border bg-white px-4 py-3.5 text-paypal-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-paypal-focus focus:ring-4 focus:ring-[#0057ff]/15 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70" />
+            className="w-full rounded-2xl border border-[#dce5f3] bg-[#f9fbff] px-4 py-3.5 text-sm text-hito-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-hito-blue focus:bg-white focus:ring-4 focus:ring-sky-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70" />
         </div>
 
         <button type="submit" disabled={isSubmitting || milestones.length === 0}
-          className="w-full rounded-full bg-paypal-blue px-5 py-3.5 font-bold text-white shadow-[0_10px_24px_rgba(0,112,186,0.24)] transition hover:-translate-y-0.5 hover:bg-paypal-navy focus:outline-none focus:ring-4 focus:ring-[#0057ff]/20 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
+          className="w-full rounded-full bg-gradient-to-r from-[#0878f9] via-[#385df0] to-[#7038ed] px-5 py-4 text-sm font-extrabold text-white shadow-[0_12px_25px_rgba(57,91,222,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(57,91,222,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/50 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
           {isSubmitting ? "Creando y enviando…" : "Crear y enviar factura"}
         </button>
-        <p className="text-xs leading-5 text-paypal-muted">La factura se enviará al correo indicado mediante PayPal Sandbox.</p>
+        <p className="rounded-2xl bg-[#f5f8ff] px-3.5 py-3 text-xs leading-5 text-slate-500 ring-1 ring-[#e7edf8]">La factura se enviará al correo indicado mediante PayPal Sandbox. No se realizará un cobro real.</p>
       </form>
     </section>
   );
