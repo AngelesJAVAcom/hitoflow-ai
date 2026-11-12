@@ -63,6 +63,35 @@ The deployment uses a shared demonstration database. Do not enter real client in
 
 ![Sent PayPal Sandbox invoices and synchronized payment states](docs/screenshots/invoices-en.png)
 
+<details>
+<summary><strong>View the complete project-to-payment interface flow</strong></summary>
+
+### 1. Create an AI-assisted project proposal
+
+The user defines the scope, budget, duration, and start date before Gemini generates a structured milestone proposal.
+
+![Project proposal form powered by Gemini](docs/screenshots/create-project-en.png)
+
+### 2. Keep a human approval checkpoint
+
+Generated projects remain pending until a person explicitly approves or rejects the proposal.
+
+![Pending project with approve and reject controls](docs/screenshots/review-project-en.png)
+
+### 3. Create a PayPal Sandbox invoice
+
+Only approved milestones can move into the invoicing workflow.
+
+![PayPal Sandbox invoice creation interface](docs/screenshots/create-invoice-en.png)
+
+### 4. Synchronize the payment state
+
+The invoice history keeps the PayPal invoice ID, amount, due date, and synchronized payment status visible.
+
+![Paid PayPal Sandbox invoices with synchronized status](docs/screenshots/invoice-status-en.png)
+
+</details>
+
 ## Architecture
 
 ```mermaid
@@ -78,16 +107,16 @@ flowchart LR
     BT --> UI
 ```
 
-| Layer      | Technology                                     | Responsibility                                                            |
-| ---------- | ---------------------------------------------- | ------------------------------------------------------------------------- |
-| Interface  | Next.js 16, React 19, TypeScript, Tailwind CSS | Project creation, approval, invoice history, and bilingual UI             |
-| AI         | Gemini API                                     | Structured milestone plans and rescheduling proposals                     |
-| Validation | Zod and deterministic server rules             | Validate requests, AI output, totals, percentages, dates, and identifiers |
-| Database   | PostgreSQL                                     | Projects, milestones, PayPal invoice references, and webhook events       |
-| Payments   | PayPal Invoicing API in Sandbox                | OAuth, invoice creation, sending, lookup, and payment state               |
-| Events     | PayPal Webhooks                                | Signature verification and idempotent payment processing                  |
-| Timeline   | Bryntum Gantt Community                        | Read-only milestone schedule and payment visualization                    |
-| Hosting    | Render                                         | Web service, environment variables, and managed PostgreSQL                |
+| Layer | Technology | Responsibility |
+| --- | --- | --- |
+| Interface | Next.js 16, React 19, TypeScript, Tailwind CSS | Project creation, approval, invoice history, and bilingual UI |
+| AI | Gemini API | Structured milestone plans and rescheduling proposals |
+| Validation | Zod and deterministic server rules | Validate requests, AI output, totals, percentages, dates, and identifiers |
+| Database | PostgreSQL | Projects, milestones, PayPal invoice references, and webhook events |
+| Payments | PayPal Invoicing API in Sandbox | OAuth, invoice creation, sending, lookup, and payment state |
+| Events | PayPal Webhooks | Signature verification and idempotent payment processing |
+| Timeline | Bryntum Gantt Community | Read-only milestone schedule and payment visualization |
+| Hosting | Render | Web service, environment variables, and managed PostgreSQL |
 
 ## PayPal integration
 
@@ -134,6 +163,7 @@ AI-generated plans and rescheduling proposals require explicit human approval be
 - Zod
 - Bryntum Gantt Community `8.0.0`
 - Render Blueprint deployment
+- Postman for manual API validation and workflow evidence
 
 ## Local setup
 
@@ -166,19 +196,19 @@ On Windows PowerShell:
 Copy-Item .env.example .env.local
 ```
 
-| Variable               | Required         | Purpose                                              |
-| ---------------------- | ---------------- | ---------------------------------------------------- |
-| `GEMINI_API_KEY`       | Yes              | Server-side access to Gemini                         |
-| `PAYPAL_CLIENT_ID`     | Yes              | PayPal Sandbox application ID                        |
-| `PAYPAL_CLIENT_SECRET` | Yes              | PayPal Sandbox server credential                     |
-| `PAYPAL_BASE_URL`      | Yes              | Use `https://api-m.sandbox.paypal.com`               |
-| `PAYPAL_WEBHOOK_ID`    | Yes for webhooks | Verifies webhook signatures                          |
-| `DATABASE_URL`         | Recommended      | PostgreSQL connection string for hosted environments |
-| `DB_HOST`              | Alternative      | PostgreSQL host when `DATABASE_URL` is not used      |
-| `DB_PORT`              | Alternative      | PostgreSQL port; defaults to `5432`                  |
-| `DB_NAME`              | Alternative      | PostgreSQL database name                             |
-| `DB_USER`              | Alternative      | PostgreSQL user                                      |
-| `DB_PASSWORD`          | Alternative      | PostgreSQL password                                  |
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `GEMINI_API_KEY` | Yes | Server-side access to Gemini |
+| `PAYPAL_CLIENT_ID` | Yes | PayPal Sandbox application ID |
+| `PAYPAL_CLIENT_SECRET` | Yes | PayPal Sandbox server credential |
+| `PAYPAL_BASE_URL` | Yes | Use `https://api-m.sandbox.paypal.com` |
+| `PAYPAL_WEBHOOK_ID` | Yes for webhooks | Verifies webhook signatures |
+| `DATABASE_URL` | Recommended | PostgreSQL connection string for hosted environments |
+| `DB_HOST` | Alternative | PostgreSQL host when `DATABASE_URL` is not used |
+| `DB_PORT` | Alternative | PostgreSQL port; defaults to `5432` |
+| `DB_NAME` | Alternative | PostgreSQL database name |
+| `DB_USER` | Alternative | PostgreSQL user |
+| `DB_PASSWORD` | Alternative | PostgreSQL password |
 
 Never commit `.env.local`, API keys, access tokens, database credentials, or real PayPal credentials.
 
@@ -229,18 +259,18 @@ The free Render service may need to wake up before the first page load. If the s
 
 ## API routes
 
-| Method  | Route                                     | Purpose                                              |
-| ------- | ----------------------------------------- | ---------------------------------------------------- |
-| `POST`  | `/api/ai/plan`                            | Generate, validate, and save a plan pending approval |
-| `GET`   | `/api/projects`                           | List projects and their milestones                   |
-| `PATCH` | `/api/projects/:id/approval`              | Approve or reject a pending plan                     |
-| `POST`  | `/api/projects/:id/reschedule-suggestion` | Generate a proposal for overdue unpaid milestones    |
-| `PATCH` | `/api/projects/:id/reschedule`            | Apply a confirmed rescheduling proposal              |
-| `POST`  | `/api/paypal/token`                       | Verify PayPal Sandbox authentication                 |
-| `POST`  | `/api/paypal/invoices`                    | Create and send an invoice for an approved milestone |
-| `GET`   | `/api/paypal/invoices/:id`                | Read and synchronize an invoice with PayPal          |
-| `POST`  | `/api/paypal/webhooks`                    | Verify and process PayPal webhook events             |
-| `GET`   | `/api/db-check`                           | Check database connectivity                          |
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/ai/plan` | Generate, validate, and save a plan pending approval |
+| `GET` | `/api/projects` | List projects and their milestones |
+| `PATCH` | `/api/projects/:id/approval` | Approve or reject a pending plan |
+| `POST` | `/api/projects/:id/reschedule-suggestion` | Generate a proposal for overdue unpaid milestones |
+| `PATCH` | `/api/projects/:id/reschedule` | Apply a confirmed rescheduling proposal |
+| `POST` | `/api/paypal/token` | Verify PayPal Sandbox authentication |
+| `POST` | `/api/paypal/invoices` | Create and send an invoice for an approved milestone |
+| `GET` | `/api/paypal/invoices/:id` | Read and synchronize an invoice with PayPal |
+| `POST` | `/api/paypal/webhooks` | Verify and process PayPal webhook events |
+| `GET` | `/api/db-check` | Check database connectivity |
 
 ## Validation and test evidence
 
@@ -257,11 +287,17 @@ Manual API validation was performed with Postman for successful and unsuccessful
 <details>
 <summary>View selected API evidence</summary>
 
+### Successful AI plan generation
+
+![Postman returns a valid structured AI project plan](docs/evidence/valid-ai-plan.jpg)
+
 ### Input validation
 
 ![Postman rejects a project description that is too short](docs/evidence/invalid-description.jpg)
 
 ![Postman rejects a negative project budget](docs/evidence/negative-budget.jpg)
+
+![Postman rejects a project duration greater than 365 days](docs/evidence/duration-limit.jpg)
 
 ### Human approval workflow
 
